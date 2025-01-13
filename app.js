@@ -1,7 +1,9 @@
 //Primero configuramos el servidor
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser')
 
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -22,6 +24,16 @@ app.get('/', (req, res)=>{
         ${usuarios.map((usuario)=>`<li>Nombre:${usuario.nombre} | Edad: ${usuario.edad} | Procedencia: ${usuario.lugarProcedencia}</li>`)
             .join('')}
         </ul>
+        <form action="/usuarios" method="post">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" required>
+            <label for="edad">Edad</label>
+            <input type="number" id="edad" name="edad" required>
+            <label for="lugarProcedencia">Procedencia</label>
+            <input type="text" id="lugarProcedencia" name="lugarProcedencia" required>
+            <button type="submit">Agregar Usuario</button>
+         </form>
+  
         <a href="/usuarios">Lista de luchadores json</a>
         `
     )
@@ -40,16 +52,51 @@ app.get('/usuarios/:nombre', (req, res)=>{
 })
 
 //Código para agregar un nuevo luchador a la lista
-app.post('/usuarios', (req, res)=>{
+/*app.post('/usuarios', (req, res)=>{
     const nuevoLuchador = {
         id: usuarios.length + 1,
         nombre: req.body.nombre,
         edad: req.body.edad,
+        procedencia: req.body.lugarProcedencia,
     };
     usuarios.push(nuevoLuchador);
     res.redirect('/');
+});*/
+
+//Para hacer post desde el cliuente sin formulario
+app.post('/usuarios', (req, res)=>{
+    const luchador = req.body;
+    res.send(luchador);
 })
 
+app.put('/usuarios/:nombre', (req, res) =>{
+    const nombre = req.params.nombre;
+    const {edad, lugarProcedencia} = req.body;
+
+    const luchador = usuarios.find((luchador) =>luchador.nombre.toLocaleLowerCase()===nombre)
+
+    if(luchador){
+        if (edad !== undefined) luchador.edad = edad;
+        if (lugarProcedencia !== undefined) luchador.lugarProcedencia = lugarProcedencia;
+
+        res.json({ message: 'Luchador actualizado con éxito', luchador })
+    }else {
+        res.status(404).json({ message: 'Luchador no encontrado' });
+    }
+})
+
+app.delete('/usuarios/:nombre', (req, res) =>{
+    const nombre = req.params.nombre;
+    const nuevaLista = usuarios.filter(luchador => luchador.nombre.toLocaleLowerCase() === nombre);
+    
+    if (usuarios.length === nuevaLista.length) {
+        res.status(404).json({ message: 'El luchador fue borrado o no existe' });
+    } else {
+        usuarios = nuevaLista;
+        res.json({ message: 'Luchador ha sido borrado', usuarios });
+    }
+
+})
 
 app.listen(3000, () =>{
     console.log('Express está escuchando en el puerto 3000')
