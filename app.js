@@ -77,9 +77,9 @@ app.put('/usuarios/:nombre', (req, res) =>{
         if (edad !== undefined) luchador.edad = edad;
         if (lugarProcedencia !== undefined) luchador.lugarProcedencia = lugarProcedencia;
 
-        res.json({ message: 'Luchador actualizado con éxito', luchador })
+        res.json({ mensaje: 'Luchador actualizado con éxito', luchador })
     }else {
-        res.status(404).json({ message: 'Luchador no encontrado' });
+        res.status(404).json({ mensaje: 'Luchador no encontrado' });
     }
 })
 
@@ -88,10 +88,10 @@ app.delete('/usuarios/:nombre', (req, res) =>{
     const nuevaLista = usuarios.filter(luchador => luchador.nombre.toLowerCase() === nombre);
     
     if (usuarios.length === nuevaLista.length) {
-        res.status(404).json({ message: 'El luchador fue borrado o no existe' });
+        res.status(404).json({ mensaje: 'El luchador fue borrado o no existe' });
     } else {
         usuarios = nuevaLista;
-        res.json({ message: 'Luchador ha sido borrado', usuarios });
+        res.json({ mensaje: 'Luchador ha sido borrado', usuarios });
     }
 
 })
