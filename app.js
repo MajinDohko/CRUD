@@ -1,9 +1,7 @@
 //Primero configuramos el servidor
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser')
 
-app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -17,7 +15,7 @@ let usuarios = [
 ];
 
 //Creamos url del index
-app.get('/', (req, res)=>{
+/*app.get('/', (req, res)=>{
     res.send(`
         <hi>Lista de luchadores</h1>
         <ul>
@@ -37,22 +35,15 @@ app.get('/', (req, res)=>{
         <a href="/usuarios">Lista de luchadores json</a>
         `
     )
-})
+}) */
 
 //Con esto obtenemos todos los luchadores de la api
 app.get('/usuarios', (req, res)=>{
     res.json(usuarios)
 })
 
-//Código para obtener un luchador por su nombre
-app.get('/usuarios/:nombre', (req, res)=>{
-    const nombre = req.params.nombre;
-    const luchador = usuarios.find(luchador => luchador.nombre.toLowerCase() === nombre);
-    res.json(luchador);
-})
-
 //Código para agregar un nuevo luchador a la lista
-/*app.post('/usuarios', (req, res)=>{
+app.post('/usuarios', (req, res)=>{
     const nuevoLuchador = {
         id: usuarios.length + 1,
         nombre: req.body.nombre,
@@ -60,20 +51,27 @@ app.get('/usuarios/:nombre', (req, res)=>{
         procedencia: req.body.lugarProcedencia,
     };
     usuarios.push(nuevoLuchador);
-    res.redirect('/');
-});*/
+    res.redirect('/usuarios');
+});
+//Código para obtener un luchador por su nombre
+app.get('/usuarios/:nombre', (req, res)=>{
+    const nombre = req.params.nombre;
+    const luchador = usuarios.find(luchador => luchador.nombre.toLowerCase() === nombre);
+    res.json(luchador);
+})
+
 
 //Para hacer post desde el cliuente sin formulario
-app.post('/usuarios', (req, res)=>{
+/*app.post('/usuarios', (req, res)=>{
     const luchador = req.body;
     res.send(luchador);
-})
+})*/
 
 app.put('/usuarios/:nombre', (req, res) =>{
     const nombre = req.params.nombre;
     const {edad, lugarProcedencia} = req.body;
 
-    const luchador = usuarios.find((luchador) =>luchador.nombre.toLocaleLowerCase()===nombre)
+    const luchador = usuarios.find((luchador) =>luchador.nombre.toLowerCase()===nombre)
 
     if(luchador){
         if (edad !== undefined) luchador.edad = edad;
@@ -87,7 +85,7 @@ app.put('/usuarios/:nombre', (req, res) =>{
 
 app.delete('/usuarios/:nombre', (req, res) =>{
     const nombre = req.params.nombre;
-    const nuevaLista = usuarios.filter(luchador => luchador.nombre.toLocaleLowerCase() === nombre);
+    const nuevaLista = usuarios.filter(luchador => luchador.nombre.toLowerCase() === nombre);
     
     if (usuarios.length === nuevaLista.length) {
         res.status(404).json({ message: 'El luchador fue borrado o no existe' });
